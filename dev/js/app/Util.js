@@ -22,6 +22,12 @@ App.define('Util', {
         if(isNaN(blue) || blue < 0) this.blue = 0;
         else if(blue > 255) this.blue = 255;
         else this.blue = blue;
+
+        this.isEqual = function(color){
+            return  this.red    === color.red    &&
+                    this.green  === color.green  &&
+                    this.blue   === color.blue;
+        }
     },
 
 });
