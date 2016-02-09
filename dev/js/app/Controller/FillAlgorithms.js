@@ -3,6 +3,45 @@ App.define('Controller.FillAlgorithms', {
     grid: 'View.Grid',
     canvas: 'View.Canvas',
 
+    scanLine: function(polygon, color){
+
+        var now = this.getTimeStamp();
+        switch (polygon.type){
+
+            case 'rect':
+                this.rectScanLine(polygon.vertices, color);
+            break;
+        }
+
+        return this.getTimeStamp() - now;
+    },
+
+    rectScanLine: function(vertices, color){
+
+        var min = this.newPoint(vertices[0].x, vertices[0].y),
+            max = this.newPoint(vertices[0].x, vertices[0].y);
+            pixel = this.newPoint(0, 0);
+
+        for(var i = 1; i < vertices.length; i++){
+
+            //Ponto minimo
+            if(min.x > vertices[i].x) min.x = vertices[i].x;
+            if(min.y > vertices[i].y) min.y = vertices[i].y;
+
+            //Ponto maxmo
+            if(max.x < vertices[i].x) max.x = vertices[i].x;
+            if(max.y < vertices[i].y) max.y = vertices[i].y;
+        }
+
+        //Converte para coordenadas da matriz de pixels
+        min = this.canvasToGrid(min.x, min.y);
+        max = this.canvasToGrid(max.x, max.y);
+
+        //Pinta os pixels
+        for(pixel.y = min.y + 1; pixel.y < max.y; pixel.y++)
+            for(pixel.x = min.x + 1; pixel.x < max.x; pixel.x++)
+                this.grid.activePixel(pixel, color, false);
+    },
 
     floodFill: function(polygon, color){
         var now = this.getTimeStamp(),
