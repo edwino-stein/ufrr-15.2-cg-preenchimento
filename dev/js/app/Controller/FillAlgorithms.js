@@ -3,6 +3,39 @@ App.define('Controller.FillAlgorithms', {
     grid: 'View.Grid',
     canvas: 'View.Canvas',
 
+
+    floodFill: function(polygon, color){
+        var now = this.getTimeStamp(),
+            seed = this.canvasToGrid(polygon.seed.x, polygon.seed.y),
+            targetColor = this.grid.getPixelColor(seed);
+
+        this.rFloodFill(seed, color, targetColor);
+        return this.getTimeStamp() - now;
+    },
+
+    /**
+        Flood Fill recursiva
+    */
+    rFloodFill: function(pixel, color, targetColor){
+
+        if(!targetColor.isEqual(this.grid.getPixelColor(pixel)))
+            return;
+
+        this.grid.activePixel(pixel, color, false);
+
+        //Pixel da direita
+        this.rFloodFill(this.newPoint(pixel.x + 1, pixel.y), color, targetColor);
+
+        //Pixel de cima
+        this.rFloodFill(this.newPoint(pixel.x, pixel.y + 1), color, targetColor);
+
+        //Pixel da esquerda
+        this.rFloodFill(this.newPoint(pixel.x - 1, pixel.y), color, targetColor);
+
+        //Pixel de baixo
+        this.rFloodFill(this.newPoint(pixel.x, pixel.y - 1), color, targetColor);
+    },
+
     newPoint: function(x, y){
         return new this.util.Point(x, y);
     },
