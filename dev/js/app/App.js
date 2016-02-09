@@ -3,7 +3,10 @@ var App = new Application({
         'Util',
         'View.Grid',
         'View.Canvas',
-        'View.Panel'
+        'View.Panel',
+        'Controller.RasterAlgorithms',
+        'Controller.FillAlgorithms',
+        'Controller.Main'
     ],
     modulesPath: 'js/app/'
 });
