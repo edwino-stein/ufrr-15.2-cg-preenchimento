@@ -116,7 +116,9 @@ App.define('View.Canvas', {
         color += ((0xff ^ c.green) < 16 ? '0' : '') + (0xff ^ c.green).toString(16);
         color += ((0xff ^ c.blue) < 16 ? '0' : '') + (0xff ^ c.blue).toString(16);
         this.stroke = '#'+color;
-        this.shape.setAttribute('stroke', '#'+color);
+
+        if(this.shapeObj !== null)
+            this.shapeObj.setAttribute('stroke', '#'+color);
     },
 
     updateViewbox: function(width, height){
