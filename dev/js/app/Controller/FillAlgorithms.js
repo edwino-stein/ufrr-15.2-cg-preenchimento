@@ -3,7 +3,7 @@ App.define('Controller.FillAlgorithms', {
     grid: 'View.Grid',
     canvas: 'View.Canvas',
 
-    scanLine: function(polygon, color){
+    scanLine: function(polygon, color, borderColor){
 
         var now = this.getTimeStamp();
         switch (polygon.type){
@@ -11,9 +11,43 @@ App.define('Controller.FillAlgorithms', {
             case 'rect':
                 this.rectScanLine(polygon.vertices, color);
             break;
+
+            case 'circle':
+                this.circleScanLine(polygon.center, polygon.radius, color, borderColor);
+            break;
         }
 
         return this.getTimeStamp() - now;
+    },
+
+    circleScanLine: function(center, radius, color, borderColor){
+
+        var maxPixel = this.canvasToGrid(center.x, center.y + radius),
+            minPixel = this.canvasToGrid(center.x, center.y - radius),
+            pixelColor;
+
+        center = this.canvasToGrid(center.x, center.y);
+
+        for (minPixel.y += 1; minPixel.y < maxPixel.y ; minPixel.y++) {
+
+            //Pinta da metade para direta
+            minPixel.x = center.x;
+            pixelColor = this.grid.getPixelColor(minPixel);
+            while(!borderColor.isEqual(pixelColor)) {
+                this.grid.activePixel(minPixel, color, false);
+                minPixel.x++;
+                pixelColor = this.grid.getPixelColor(minPixel);
+            }
+
+            //Pinta da metade para esquerda
+            minPixel.x = center.x - 1;
+            pixelColor = this.grid.getPixelColor(minPixel);
+            while(!borderColor.isEqual(pixelColor)) {
+                this.grid.activePixel(minPixel, color, false);
+                minPixel.x--;
+                pixelColor = this.grid.getPixelColor(minPixel);
+            }
+        }
     },
 
     rectScanLine: function(vertices, color){
