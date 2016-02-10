@@ -4,6 +4,7 @@ App.define('Controller.Main', {
     panel: 'View.Panel',
     canvas: 'View.Canvas',
     raster: 'Controller.RasterAlgorithms',
+    fill: 'Controller.FillAlgorithms',
 
     $time: '#time',
 
@@ -11,6 +12,7 @@ App.define('Controller.Main', {
     fillAlgorithm: null,
     fillColor: {red: 0, green: 0, blue: 0},
     borderColor: {red: 50, green: 50, blue: 50},
+
 
     render: function(){
         if(this.polygon === null) return;
@@ -29,16 +31,22 @@ App.define('Controller.Main', {
                 time = this.raster.circle(this.polygon.center, this.polygon.radius, this.borderColor);
             break;
         }
+        this.$time.find('.raster').html((time).toFixed(3));
+
+
+        switch (this.fillAlgorithm){
+            case 'floodfill':
+                time = this.fill.floodFill(this.polygon, this.fillColor);
+            break;
+
+            case 'scanline':
+                time = this.fill.scanLine(this.polygon, this.fillColor, this.borderColor);
+            break;
+        }
+
+        this.$time.find('.fill').html((time).toFixed(3));
 
         this.grid.update();
-        this.$time.find('.raster').html((time).toFixed(5));
-    },
-
-    applyFill: function(){
-
-        if(this.polygon === null) return;
-        // if(this.polygon === null || this.fillAlgorithm === null) return;
-
 
     },
 
@@ -77,23 +85,28 @@ App.define('Controller.Main', {
         this.panel.addListener('resolution-change', function(e, resolution){
             me.grid.setResolution(resolution);
             me.render();
-            me.applyFill();
         });
 
         this.panel.addListener('color-change', function(e, color){
             me.setColor(color);
             me.render();
-            me.applyFill();
         });
 
         this.panel.addListener('algorithm-change', function(e, algorithm){
             me.fillAlgorithm = algorithm;
             me.render();
-            me.applyFill();
         });
 
         me.panel.setResolution(7);
-        // me.panel.setAlgorithm('parametric');
+        me.panel.setAlgorithm('floodfill');
+        me.panel.setPolygon('rect');
+
+
+        this.setColor(new this.util.Color(
+            this.fillColor.red,
+            this.fillColor.green,
+            this.fillColor.blue
+        ));
     },
 
     init: function(){
@@ -102,6 +115,7 @@ App.define('Controller.Main', {
         me.canvas = me._appRoot_.get(me.canvas);
         me.panel = me._appRoot_.get(me.panel);
         me.raster = me._appRoot_.get(me.raster);
+        me.fill = me._appRoot_.get(me.fill);
         me.util = me._appRoot_.get('Util');
         me.$time = $(me.$time);
     }
