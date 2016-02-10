@@ -101,7 +101,7 @@ App.define('Controller.FillAlgorithms', {
 
         return intersections;
     },
-    
+
     getXOfLine: function(y, point1, point2){
         return (((y - point1.y)*(point2.x - point1.x))/(point2.y - point1.y)) + point1.x;
     },
@@ -168,7 +168,12 @@ App.define('Controller.FillAlgorithms', {
             seed = this.canvasToGrid(polygon.seed.x, polygon.seed.y),
             targetColor = this.grid.getPixelColor(seed);
 
-        this.rFloodFill(seed, color, targetColor);
+        try{
+            this.rFloodFill(seed, color, targetColor);
+        }catch(ex){
+            window.alert("Erro ao preencher o polígono:\n\n"+ex);
+        }
+
         return this.getTimeStamp() - now;
     },
 
